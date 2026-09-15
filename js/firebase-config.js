@@ -7,6 +7,7 @@ import { initializeApp } from "firebase/app";
 const firebaseConfig = {
   apiKey: "AIzaSyB0jumPEEvj--x_uWvn_Z1zDjs95XVy6KM",
   authDomain: "preschool-pickup.firebaseapp.com",
+  databaseURL: "https://preschool-pickup-default-rtdb.firebaseio.com",
   projectId: "preschool-pickup",
   storageBucket: "preschool-pickup.firebasestorage.app",
   messagingSenderId: "409969675462",
