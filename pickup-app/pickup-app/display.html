@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Pickup Board</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div class="board board-idle" id="board">
+  <div id="idleView">
+    <div class="idle-label">Preschool Pickup</div>
+    <div class="idle-sub">Waiting for the next car…</div>
+  </div>
+
+  <div id="callView" class="board-call" style="display:none;">
+    <div class="siren">🚨 PICKUP</div>
+    <div class="names" id="callNames"></div>
+    <div class="instruction" id="callInstruction"></div>
+  </div>
+
+  <div class="board-footer" id="lastUpdated"></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/auth-guard.js"></script>
+<script src="js/display.js"></script>
+</body>
+</html>

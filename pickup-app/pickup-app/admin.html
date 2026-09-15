@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Manage Students — Pickup Line</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div class="topbar">
+  <h1>MANAGE <span class="stripe">STUDENTS</span></h1>
+  <div class="topbar-actions">
+    <span id="userEmail"></span>
+    <a class="btn btn-ghost" href="index.html">Back to Pickup</a>
+    <button class="btn btn-ghost" id="signOutBtn">Sign out</button>
+  </div>
+</div>
+
+<div class="page-body">
+
+  <div class="admin-section">
+    <h2>Add a child</h2>
+    <form id="addForm" class="inline-form">
+      <input type="text" id="addNameInput" placeholder="Child's full name" required>
+      <button type="submit" class="btn btn-amber">Save</button>
+    </form>
+    <p class="status-msg" id="addStatus"></p>
+  </div>
+
+  <div class="admin-section bulk-area">
+    <h2>Add a whole class list at once</h2>
+    <p style="color:#5B6472; font-size:14px; margin-top:-8px;">One name per line.</p>
+    <textarea id="bulkInput" placeholder="Emma Smith&#10;Jack Smith&#10;Olivia Miller"></textarea>
+    <div style="margin-top:10px;">
+      <button class="btn btn-amber" id="bulkAddBtn">Add all</button>
+    </div>
+    <p class="status-msg" id="bulkStatus"></p>
+  </div>
+
+  <div class="admin-section">
+    <h2>All students</h2>
+    <div class="search-row" style="margin-top:0;">
+      <input type="text" id="adminSearch" placeholder="🔎 Search children…">
+    </div>
+    <table class="student-table">
+      <thead>
+        <tr><th>Name</th><th style="width:160px;">Actions</th></tr>
+      </thead>
+      <tbody id="studentTableBody"></tbody>
+    </table>
+    <p class="loading-note" id="noStudentsNote" style="display:none;">No students yet — add one above.</p>
+  </div>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/auth-guard.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

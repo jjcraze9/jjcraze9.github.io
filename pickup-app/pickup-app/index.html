@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Pickup Line — Staff</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div class="topbar">
+  <h1>PICKUP <span class="stripe">LINE</span></h1>
+  <div class="topbar-actions">
+    <span id="userEmail"></span>
+    <a class="btn btn-ghost" href="admin.html">Manage Students</a>
+    <button class="btn btn-ghost" id="signOutBtn">Sign out</button>
+  </div>
+</div>
+
+<div class="page-body">
+
+  <div class="search-row">
+    <input type="text" id="searchInput" placeholder="🔎 Search child…" autocomplete="off">
+  </div>
+
+  <div class="mode-row">
+    <button class="btn btn-outline" id="siblingModeBtn">Call siblings together</button>
+    <button class="btn btn-amber" id="callSelectedBtn" style="display:none;">Call selected</button>
+    <button class="btn btn-ghost" id="cancelSiblingBtn" style="display:none; color:#16233D;">Cancel</button>
+    <span class="hint" id="modeHint"></span>
+  </div>
+
+  <div id="childGrid" class="child-grid"></div>
+  <div id="emptyState" class="empty-state" style="display:none;">
+    <h2>No children match that search</h2>
+    <p>Try a different name, or add them from Manage Students.</p>
+  </div>
+
+  <div class="recent-panel">
+    <h2>Recently Called</h2>
+    <ul class="recent-list" id="recentList"></ul>
+    <p class="recent-empty" id="recentEmpty">No one called yet today.</p>
+  </div>
+
+  <div class="reset-row">
+    <button class="btn btn-danger" id="resetBtn">Reset Today's Pickup List</button>
+  </div>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
+<script src="js/firebase-config.js"></script>
+<script src="js/auth-guard.js"></script>
+<script src="js/index.js"></script>
+</body>
+</html>
