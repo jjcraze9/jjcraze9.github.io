@@ -1,0 +1,16 @@
+{
+  "rules": {
+    "students": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "pickupSession": {
+      ".read": "auth != null",
+      ".write": "auth != null"
+    },
+    "$other": {
+      ".read": false,
+      ".write": false
+    }
+  }
+}
