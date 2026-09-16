@@ -1,3 +1,7 @@
+if (typeof checkFirebaseReady === 'function' && !checkFirebaseReady()) {
+  // banner already shown by diagnostics.js; stop before touching firebase.database()
+} else {
+
 const db = firebase.database();
 
 const board = document.getElementById('board');
@@ -53,4 +57,6 @@ function showCall(call, isNew) {
     void board.offsetWidth;
     board.classList.add('flash');
   }
+}
+
 }

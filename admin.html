@@ -23,6 +23,10 @@
     <h2>Add a child</h2>
     <form id="addForm" class="inline-form">
       <input type="text" id="addNameInput" placeholder="Child's full name" required>
+      <div class="grade-choice">
+        <label><input type="radio" name="addGrade" value="3s" checked> 3s</label>
+        <label><input type="radio" name="addGrade" value="4s"> 4s</label>
+      </div>
       <button type="submit" class="btn btn-amber">Save</button>
     </form>
     <p class="status-msg" id="addStatus"></p>
@@ -30,9 +34,13 @@
 
   <div class="admin-section bulk-area">
     <h2>Add a whole class list at once</h2>
-    <p style="color:#5B6472; font-size:14px; margin-top:-8px;">One name per line.</p>
+    <p style="color:#5B6472; font-size:14px; margin-top:-8px;">One name per line. All names will be added to the grade selected below.</p>
     <textarea id="bulkInput" placeholder="Emma Smith&#10;Jack Smith&#10;Olivia Miller"></textarea>
-    <div style="margin-top:10px;">
+    <div style="margin-top:10px; display:flex; gap:16px; align-items:center; flex-wrap:wrap;">
+      <div class="grade-choice">
+        <label><input type="radio" name="bulkGrade" value="3s" checked> 3s</label>
+        <label><input type="radio" name="bulkGrade" value="4s"> 4s</label>
+      </div>
       <button class="btn btn-amber" id="bulkAddBtn">Add all</button>
     </div>
     <p class="status-msg" id="bulkStatus"></p>
@@ -40,12 +48,16 @@
 
   <div class="admin-section">
     <h2>All students</h2>
-    <div class="search-row" style="margin-top:0;">
+    <div class="grade-tabs" id="adminGradeTabs">
+      <button class="grade-tab active" data-grade="3s">3s</button>
+      <button class="grade-tab" data-grade="4s">4s</button>
+    </div>
+    <div class="search-row" style="margin-top:12px;">
       <input type="text" id="adminSearch" placeholder="🔎 Search children…">
     </div>
     <table class="student-table">
       <thead>
-        <tr><th>Name</th><th style="width:160px;">Actions</th></tr>
+        <tr><th>Name</th><th style="width:90px;">Grade</th><th style="width:170px;">Actions</th></tr>
       </thead>
       <tbody id="studentTableBody"></tbody>
     </table>
@@ -58,6 +70,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
 <script src="js/firebase-config.js"></script>
+<script src="js/diagnostics.js"></script>
 <script src="js/auth-guard.js"></script>
 <script src="js/admin.js"></script>
 </body>

@@ -1,15 +1,17 @@
-let students = {};      // id -> { name }
-let calledToday = {};   // id -> true
+if (typeof checkFirebaseReady === 'function' && !checkFirebaseReady()) {
+  // banner already shown by diagnostics.js; stop before touching firebase.database()
+} else {
+
+let students = {};   // id -> { name, grade }
+let callLog = {};    // id -> { name, timestamp }  (presence = "called today")
+let currentGrade = '3s';
 let searchTerm = '';
-let siblingMode = false;
-let selectedIds = new Set();
 
 const db = firebase.database();
 const grid = document.getElementById('childGrid');
 const emptyState = document.getElementById('emptyState');
 const recentList = document.getElementById('recentList');
 const recentEmpty = document.getElementById('recentEmpty');
-const modeHint = document.getElementById('modeHint');
 
 requireStaffLogin((user) => {
   document.getElementById('userEmail').textContent = user.email;
@@ -23,24 +25,24 @@ function startListeners() {
     render();
   });
 
-  db.ref('pickupSession/called').on('value', (snap) => {
-    calledToday = snap.val() || {};
+  db.ref('pickupSession/callLog').on('value', (snap) => {
+    callLog = snap.val() || {};
     render();
+    renderRecent();
   });
+}
 
-  db.ref('pickupSession/callLog').orderByChild('timestamp').limitToLast(15).on('value', (snap) => {
-    const entries = [];
-    snap.forEach((child) => entries.push(child.val()));
-    entries.reverse();
-    renderRecent(entries);
-  });
+function studentGrade(id) {
+  return (students[id] && students[id].grade) || '3s'; // fallback for older test data with no grade set
 }
 
 function render() {
   grid.innerHTML = '';
   const ids = Object.keys(students).filter((id) => {
     const name = (students[id].name || '').toLowerCase();
-    return name.includes(searchTerm.toLowerCase());
+    const matchesSearch = name.includes(searchTerm.toLowerCase());
+    const matchesGrade = studentGrade(id) === currentGrade;
+    return matchesSearch && matchesGrade;
   });
 
   ids.sort((a, b) => (students[a].name || '').localeCompare(students[b].name || ''));
@@ -52,84 +54,69 @@ function render() {
     btn.className = 'child-btn';
     btn.textContent = students[id].name;
 
-    if (calledToday[id]) btn.classList.add('called');
-    if (selectedIds.has(id)) btn.classList.add('selected');
+    if (callLog[id]) btn.classList.add('called');
 
     btn.addEventListener('click', () => handleTap(id));
     grid.appendChild(btn);
   });
 }
 
-function renderRecent(entries) {
+function renderRecent() {
+  const entries = Object.keys(callLog).map((id) => ({ id, ...callLog[id] }));
+  entries.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0)); // oldest first
+  const recentThree = entries.slice(-3); // last 3 chronologically, still oldest-of-these-three first
+
   recentList.innerHTML = '';
-  recentEmpty.style.display = entries.length === 0 ? 'block' : 'none';
-  entries.forEach((entry) => {
+  recentEmpty.style.display = recentThree.length === 0 ? 'block' : 'none';
+
+  recentThree.forEach((entry) => {
     const li = document.createElement('li');
-    li.textContent = '✓ ' + (entry.names || []).join(' & ');
+    const btn = document.createElement('button');
+    btn.className = 'recent-chip';
+    btn.textContent = '✓ ' + entry.name;
+    btn.title = 'Tap to undo this call';
+    btn.addEventListener('click', () => uncallStudent(entry.id));
+    li.appendChild(btn);
     recentList.appendChild(li);
   });
 }
 
 function handleTap(id) {
-  if (siblingMode) {
-    if (selectedIds.has(id)) selectedIds.delete(id);
-    else selectedIds.add(id);
-    render();
-    return;
+  if (callLog[id]) {
+    uncallStudent(id);
+  } else {
+    callStudent(id);
   }
-  callChildren([id]);
 }
 
-function callChildren(ids) {
-  const names = ids.map((id) => students[id].name).filter(Boolean);
-  if (names.length === 0) return;
+function callStudent(id) {
+  const name = students[id] && students[id].name;
+  if (!name) return;
 
   const timestamp = firebase.database.ServerValue.TIMESTAMP;
-
   const updates = {};
-  updates['pickupSession/currentCall'] = { names, timestamp };
-  ids.forEach((id) => {
-    updates[`pickupSession/called/${id}`] = true;
-  });
+  updates[`pickupSession/callLog/${id}`] = { name, timestamp };
+  updates['pickupSession/currentCall'] = { names: [name], timestamp };
 
-  db.ref().update(updates).then(() => {
-    db.ref('pickupSession/callLog').push({ names, timestamp });
+  db.ref().update(updates).catch((err) => {
+    alert("Couldn't send the pickup call: " + err.message);
   });
-
-  if (siblingMode) exitSiblingMode();
 }
 
-// ---- Sibling / multi-select mode ----
-
-const siblingModeBtn = document.getElementById('siblingModeBtn');
-const callSelectedBtn = document.getElementById('callSelectedBtn');
-const cancelSiblingBtn = document.getElementById('cancelSiblingBtn');
-
-siblingModeBtn.addEventListener('click', () => {
-  siblingMode = true;
-  selectedIds = new Set();
-  siblingModeBtn.style.display = 'none';
-  callSelectedBtn.style.display = 'inline-block';
-  cancelSiblingBtn.style.display = 'inline-block';
-  modeHint.textContent = 'Tap each child being picked up together, then tap "Call selected."';
-  render();
-});
-
-cancelSiblingBtn.addEventListener('click', exitSiblingMode);
-
-function exitSiblingMode() {
-  siblingMode = false;
-  selectedIds = new Set();
-  siblingModeBtn.style.display = 'inline-block';
-  callSelectedBtn.style.display = 'none';
-  cancelSiblingBtn.style.display = 'none';
-  modeHint.textContent = '';
-  render();
+function uncallStudent(id) {
+  db.ref(`pickupSession/callLog/${id}`).remove().catch((err) => {
+    alert("Couldn't undo that call: " + err.message);
+  });
 }
 
-callSelectedBtn.addEventListener('click', () => {
-  if (selectedIds.size === 0) return;
-  callChildren(Array.from(selectedIds));
+// ---- Grade tabs ----
+
+document.querySelectorAll('.grade-tab').forEach((tabBtn) => {
+  tabBtn.addEventListener('click', () => {
+    currentGrade = tabBtn.dataset.grade;
+    document.querySelectorAll('.grade-tab').forEach((b) => b.classList.toggle('active', b === tabBtn));
+    render();
+  });
 });
 
 // ---- Search ----
@@ -148,7 +135,7 @@ document.getElementById('resetBtn').addEventListener('click', () => {
   );
   if (!confirmed) return;
 
-  db.ref('pickupSession').set({}).then(() => {
-    exitSiblingMode();
-  });
+  db.ref('pickupSession').set({});
 });
+
+}

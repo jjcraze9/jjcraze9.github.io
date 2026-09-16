@@ -1,3 +1,7 @@
+if (typeof checkFirebaseReady === 'function' && !checkFirebaseReady()) {
+  // banner already shown by diagnostics.js; stop before touching firebase.auth()
+} else {
+
 const params = new URLSearchParams(location.search);
 const next = params.get('next') || 'index.html';
 
@@ -25,9 +29,14 @@ form.addEventListener('submit', (e) => {
       location.href = next;
     })
     .catch((err) => {
-      errorBox.textContent = 'That email or password isn\'t right. Try again.';
+      errorBox.textContent = err.code === 'auth/invalid-api-key' || err.code === 'auth/configuration-not-found'
+        ? 'Firebase isn\'t configured correctly yet — double check js/firebase-config.js. (' + err.code + ')'
+        : 'That email or password isn\'t right. Try again.';
       errorBox.classList.add('show');
       submitBtn.disabled = false;
       submitBtn.textContent = 'Sign in';
     });
 });
+
+}
+

@@ -19,15 +19,13 @@
 
 <div class="page-body">
 
-  <div class="search-row">
-    <input type="text" id="searchInput" placeholder="🔎 Search child…" autocomplete="off">
+  <div class="grade-tabs" id="gradeTabs">
+    <button class="grade-tab active" data-grade="3s">3s</button>
+    <button class="grade-tab" data-grade="4s">4s</button>
   </div>
 
-  <div class="mode-row">
-    <button class="btn btn-outline" id="siblingModeBtn">Call siblings together</button>
-    <button class="btn btn-amber" id="callSelectedBtn" style="display:none;">Call selected</button>
-    <button class="btn btn-ghost" id="cancelSiblingBtn" style="display:none; color:#16233D;">Cancel</button>
-    <span class="hint" id="modeHint"></span>
+  <div class="search-row">
+    <input type="text" id="searchInput" placeholder="🔎 Search child…" autocomplete="off">
   </div>
 
   <div id="childGrid" class="child-grid"></div>
@@ -38,6 +36,7 @@
 
   <div class="recent-panel">
     <h2>Recently Called</h2>
+    <p class="hint" style="margin-bottom:10px;">Tap a name here (or tap it again in the grid) to undo a call.</p>
     <ul class="recent-list" id="recentList"></ul>
     <p class="recent-empty" id="recentEmpty">No one called yet today.</p>
   </div>
@@ -52,6 +51,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
 <script src="js/firebase-config.js"></script>
+<script src="js/diagnostics.js"></script>
 <script src="js/auth-guard.js"></script>
 <script src="js/index.js"></script>
 </body>

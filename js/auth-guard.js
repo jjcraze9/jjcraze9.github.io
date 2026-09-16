@@ -3,6 +3,9 @@
 // someone is signed in; otherwise bounces to login.html.
 
 function requireStaffLogin(onReady) {
+  if (typeof checkFirebaseReady === 'function' && !checkFirebaseReady()) {
+    return; // banner already shown; don't try to use a broken firebase connection
+  }
   firebase.auth().onAuthStateChanged((user) => {
     if (user) {
       onReady(user);

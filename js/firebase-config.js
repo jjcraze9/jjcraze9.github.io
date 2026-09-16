@@ -1,3 +1,7 @@
+// Firebase config for the "preschool-pickup" project.
+// Uses the compat/global SDK (loaded via <script> tags in each HTML file),
+// NOT the newer "import" style — that only works with a build tool.
+
 const firebaseConfig = {
   apiKey: "AIzaSyB0jumPEEvj--x_uWvn_Z1zDjs95XVy6KM",
   authDomain: "preschool-pickup.firebaseapp.com",

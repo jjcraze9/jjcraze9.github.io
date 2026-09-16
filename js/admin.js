@@ -1,6 +1,11 @@
+if (typeof checkFirebaseReady === 'function' && !checkFirebaseReady()) {
+  // banner already shown by diagnostics.js; stop before touching firebase.database()
+} else {
+
 const db = firebase.database();
 let students = {};
 let adminSearchTerm = '';
+let currentAdminGrade = '3s';
 
 const tbody = document.getElementById('studentTableBody');
 const noStudentsNote = document.getElementById('noStudentsNote');
@@ -15,10 +20,15 @@ requireStaffLogin((user) => {
   });
 });
 
+function studentGrade(id) {
+  return (students[id] && students[id].grade) || '3s'; // fallback for older test data with no grade set
+}
+
 function renderTable() {
   tbody.innerHTML = '';
   const ids = Object.keys(students).filter((id) =>
-    (students[id].name || '').toLowerCase().includes(adminSearchTerm.toLowerCase())
+    (students[id].name || '').toLowerCase().includes(adminSearchTerm.toLowerCase()) &&
+    studentGrade(id) === currentAdminGrade
   );
   ids.sort((a, b) => (students[a].name || '').localeCompare(students[b].name || ''));
 
@@ -29,6 +39,9 @@ function renderTable() {
 
     const nameTd = document.createElement('td');
     nameTd.textContent = students[id].name;
+
+    const gradeTd = document.createElement('td');
+    gradeTd.textContent = studentGrade(id);
 
     const actionsTd = document.createElement('td');
     actionsTd.className = 'row-actions';
@@ -47,6 +60,7 @@ function renderTable() {
     actionsTd.appendChild(removeBtn);
 
     tr.appendChild(nameTd);
+    tr.appendChild(gradeTd);
     tr.appendChild(actionsTd);
     tbody.appendChild(tr);
   });
@@ -61,6 +75,18 @@ function startEdit(tr, id) {
   input.value = students[id].name;
   nameTd.appendChild(input);
 
+  const gradeTd = document.createElement('td');
+  const select = document.createElement('select');
+  select.className = 'edit-input';
+  ['3s', '4s'].forEach((g) => {
+    const opt = document.createElement('option');
+    opt.value = g;
+    opt.textContent = g;
+    if (studentGrade(id) === g) opt.selected = true;
+    select.appendChild(opt);
+  });
+  gradeTd.appendChild(select);
+
   const actionsTd = document.createElement('td');
   actionsTd.className = 'row-actions';
 
@@ -69,8 +95,9 @@ function startEdit(tr, id) {
   saveBtn.textContent = 'Save';
   saveBtn.addEventListener('click', () => {
     const newName = input.value.trim();
+    const newGrade = select.value;
     if (!newName) return;
-    db.ref(`students/${id}/name`).set(newName);
+    db.ref(`students/${id}`).update({ name: newName, grade: newGrade });
   });
 
   const cancelBtn = document.createElement('button');
@@ -82,6 +109,7 @@ function startEdit(tr, id) {
   actionsTd.appendChild(cancelBtn);
 
   tr.appendChild(nameTd);
+  tr.appendChild(gradeTd);
   tr.appendChild(actionsTd);
 }
 
@@ -91,7 +119,7 @@ function removeStudent(id, name) {
 
   const updates = {};
   updates[`students/${id}`] = null;
-  updates[`pickupSession/called/${id}`] = null;
+  updates[`pickupSession/callLog/${id}`] = null;
   db.ref().update(updates);
 }
 
@@ -106,11 +134,16 @@ addForm.addEventListener('submit', (e) => {
   const name = input.value.trim();
   if (!name) return;
 
-  db.ref('students').push({ name }).then(() => {
+  const grade = document.querySelector('input[name="addGrade"]:checked').value;
+
+  db.ref('students').push({ name, grade }).then(() => {
     input.value = '';
-    addStatus.textContent = `Added ${name}.`;
+    addStatus.textContent = `Added ${name} (${grade}).`;
     addStatus.className = 'status-msg ok';
     setTimeout(() => { addStatus.textContent = ''; }, 2500);
+  }).catch((err) => {
+    addStatus.textContent = `Couldn't save: ${err.message}`;
+    addStatus.className = 'status-msg err';
   });
 });
 
@@ -119,6 +152,7 @@ addForm.addEventListener('submit', (e) => {
 document.getElementById('bulkAddBtn').addEventListener('click', () => {
   const textarea = document.getElementById('bulkInput');
   const bulkStatus = document.getElementById('bulkStatus');
+  const grade = document.querySelector('input[name="bulkGrade"]:checked').value;
   const names = textarea.value
     .split('\n')
     .map((n) => n.trim())
@@ -129,14 +163,27 @@ document.getElementById('bulkAddBtn').addEventListener('click', () => {
   const updates = {};
   names.forEach((name) => {
     const newRef = db.ref('students').push();
-    updates[`students/${newRef.key}`] = { name };
+    updates[`students/${newRef.key}`] = { name, grade };
   });
 
   db.ref().update(updates).then(() => {
     textarea.value = '';
-    bulkStatus.textContent = `Added ${names.length} student${names.length === 1 ? '' : 's'}.`;
+    bulkStatus.textContent = `Added ${names.length} student${names.length === 1 ? '' : 's'} to ${grade}.`;
     bulkStatus.className = 'status-msg ok';
     setTimeout(() => { bulkStatus.textContent = ''; }, 3000);
+  }).catch((err) => {
+    bulkStatus.textContent = `Couldn't save: ${err.message}`;
+    bulkStatus.className = 'status-msg err';
+  });
+});
+
+// ---- Grade tabs ----
+
+document.querySelectorAll('#adminGradeTabs .grade-tab').forEach((tabBtn) => {
+  tabBtn.addEventListener('click', () => {
+    currentAdminGrade = tabBtn.dataset.grade;
+    document.querySelectorAll('#adminGradeTabs .grade-tab').forEach((b) => b.classList.toggle('active', b === tabBtn));
+    renderTable();
   });
 });
 
@@ -146,3 +193,5 @@ document.getElementById('adminSearch').addEventListener('input', (e) => {
   adminSearchTerm = e.target.value;
   renderTable();
 });
+
+}
