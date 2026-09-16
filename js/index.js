@@ -36,6 +36,10 @@ function studentGrade(id) {
   return (students[id] && students[id].grade) || '3s'; // fallback for older test data with no grade set
 }
 
+function studentClassColor(id) {
+  return (students[id] && students[id].classColor) || 'green'; // fallback for older test data
+}
+
 function render() {
   grid.innerHTML = '';
   const ids = Object.keys(students).filter((id) => {
@@ -54,7 +58,10 @@ function render() {
     btn.className = 'child-btn';
     btn.textContent = students[id].name;
 
-    if (callLog[id]) btn.classList.add('called');
+    if (callLog[id]) {
+      btn.classList.add('called');
+      btn.classList.add(studentClassColor(id) === 'orange' ? 'called-orange' : 'called-green');
+    }
 
     btn.addEventListener('click', () => handleTap(id));
     grid.appendChild(btn);

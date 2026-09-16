@@ -24,6 +24,10 @@ function studentGrade(id) {
   return (students[id] && students[id].grade) || '3s'; // fallback for older test data with no grade set
 }
 
+function studentClassColor(id) {
+  return (students[id] && students[id].classColor) || 'green'; // fallback for older test data
+}
+
 function renderTable() {
   tbody.innerHTML = '';
   const ids = Object.keys(students).filter((id) =>
@@ -43,6 +47,13 @@ function renderTable() {
     const gradeTd = document.createElement('td');
     gradeTd.textContent = studentGrade(id);
 
+    const classTd = document.createElement('td');
+    const classColor = studentClassColor(id);
+    const badge = document.createElement('span');
+    badge.className = 'class-badge class-badge-' + classColor;
+    badge.textContent = classColor === 'orange' ? 'Orange' : 'Green';
+    classTd.appendChild(badge);
+
     const actionsTd = document.createElement('td');
     actionsTd.className = 'row-actions';
 
@@ -61,6 +72,7 @@ function renderTable() {
 
     tr.appendChild(nameTd);
     tr.appendChild(gradeTd);
+    tr.appendChild(classTd);
     tr.appendChild(actionsTd);
     tbody.appendChild(tr);
   });
@@ -76,16 +88,28 @@ function startEdit(tr, id) {
   nameTd.appendChild(input);
 
   const gradeTd = document.createElement('td');
-  const select = document.createElement('select');
-  select.className = 'edit-input';
+  const gradeSelect = document.createElement('select');
+  gradeSelect.className = 'edit-input';
   ['3s', '4s'].forEach((g) => {
     const opt = document.createElement('option');
     opt.value = g;
     opt.textContent = g;
     if (studentGrade(id) === g) opt.selected = true;
-    select.appendChild(opt);
+    gradeSelect.appendChild(opt);
   });
-  gradeTd.appendChild(select);
+  gradeTd.appendChild(gradeSelect);
+
+  const classTd = document.createElement('td');
+  const classSelect = document.createElement('select');
+  classSelect.className = 'edit-input';
+  [['green', 'Green'], ['orange', 'Orange']].forEach(([value, label]) => {
+    const opt = document.createElement('option');
+    opt.value = value;
+    opt.textContent = label;
+    if (studentClassColor(id) === value) opt.selected = true;
+    classSelect.appendChild(opt);
+  });
+  classTd.appendChild(classSelect);
 
   const actionsTd = document.createElement('td');
   actionsTd.className = 'row-actions';
@@ -95,9 +119,10 @@ function startEdit(tr, id) {
   saveBtn.textContent = 'Save';
   saveBtn.addEventListener('click', () => {
     const newName = input.value.trim();
-    const newGrade = select.value;
+    const newGrade = gradeSelect.value;
+    const newClassColor = classSelect.value;
     if (!newName) return;
-    db.ref(`students/${id}`).update({ name: newName, grade: newGrade });
+    db.ref(`students/${id}`).update({ name: newName, grade: newGrade, classColor: newClassColor });
   });
 
   const cancelBtn = document.createElement('button');
@@ -110,6 +135,7 @@ function startEdit(tr, id) {
 
   tr.appendChild(nameTd);
   tr.appendChild(gradeTd);
+  tr.appendChild(classTd);
   tr.appendChild(actionsTd);
 }
 
@@ -135,10 +161,11 @@ addForm.addEventListener('submit', (e) => {
   if (!name) return;
 
   const grade = document.querySelector('input[name="addGrade"]:checked').value;
+  const classColor = document.querySelector('input[name="addClass"]:checked').value;
 
-  db.ref('students').push({ name, grade }).then(() => {
+  db.ref('students').push({ name, grade, classColor }).then(() => {
     input.value = '';
-    addStatus.textContent = `Added ${name} (${grade}).`;
+    addStatus.textContent = `Added ${name} (${grade}, ${classColor} class).`;
     addStatus.className = 'status-msg ok';
     setTimeout(() => { addStatus.textContent = ''; }, 2500);
   }).catch((err) => {
@@ -153,6 +180,7 @@ document.getElementById('bulkAddBtn').addEventListener('click', () => {
   const textarea = document.getElementById('bulkInput');
   const bulkStatus = document.getElementById('bulkStatus');
   const grade = document.querySelector('input[name="bulkGrade"]:checked').value;
+  const classColor = document.querySelector('input[name="bulkClass"]:checked').value;
   const names = textarea.value
     .split('\n')
     .map((n) => n.trim())
@@ -163,12 +191,12 @@ document.getElementById('bulkAddBtn').addEventListener('click', () => {
   const updates = {};
   names.forEach((name) => {
     const newRef = db.ref('students').push();
-    updates[`students/${newRef.key}`] = { name, grade };
+    updates[`students/${newRef.key}`] = { name, grade, classColor };
   });
 
   db.ref().update(updates).then(() => {
     textarea.value = '';
-    bulkStatus.textContent = `Added ${names.length} student${names.length === 1 ? '' : 's'} to ${grade}.`;
+    bulkStatus.textContent = `Added ${names.length} student${names.length === 1 ? '' : 's'} to ${grade}, ${classColor} class.`;
     bulkStatus.className = 'status-msg ok';
     setTimeout(() => { bulkStatus.textContent = ''; }, 3000);
   }).catch((err) => {

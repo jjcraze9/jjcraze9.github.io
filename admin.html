@@ -27,6 +27,10 @@
         <label><input type="radio" name="addGrade" value="3s" checked> 3s</label>
         <label><input type="radio" name="addGrade" value="4s"> 4s</label>
       </div>
+      <div class="grade-choice">
+        <label><input type="radio" name="addClass" value="green" checked> Green Class</label>
+        <label><input type="radio" name="addClass" value="orange"> Orange Class</label>
+      </div>
       <button type="submit" class="btn btn-amber">Save</button>
     </form>
     <p class="status-msg" id="addStatus"></p>
@@ -34,12 +38,16 @@
 
   <div class="admin-section bulk-area">
     <h2>Add a whole class list at once</h2>
-    <p style="color:#5B6472; font-size:14px; margin-top:-8px;">One name per line. All names will be added to the grade selected below.</p>
+    <p style="color:#5B6472; font-size:14px; margin-top:-8px;">One name per line. All names will be added with the grade and class selected below.</p>
     <textarea id="bulkInput" placeholder="Emma Smith&#10;Jack Smith&#10;Olivia Miller"></textarea>
     <div style="margin-top:10px; display:flex; gap:16px; align-items:center; flex-wrap:wrap;">
       <div class="grade-choice">
         <label><input type="radio" name="bulkGrade" value="3s" checked> 3s</label>
         <label><input type="radio" name="bulkGrade" value="4s"> 4s</label>
+      </div>
+      <div class="grade-choice">
+        <label><input type="radio" name="bulkClass" value="green" checked> Green Class</label>
+        <label><input type="radio" name="bulkClass" value="orange"> Orange Class</label>
       </div>
       <button class="btn btn-amber" id="bulkAddBtn">Add all</button>
     </div>
@@ -57,7 +65,7 @@
     </div>
     <table class="student-table">
       <thead>
-        <tr><th>Name</th><th style="width:90px;">Grade</th><th style="width:170px;">Actions</th></tr>
+        <tr><th>Name</th><th style="width:90px;">Group</th><th style="width:100px;">Class</th><th style="width:170px;">Actions</th></tr>
       </thead>
       <tbody id="studentTableBody"></tbody>
     </table>

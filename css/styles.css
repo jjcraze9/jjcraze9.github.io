@@ -15,6 +15,7 @@
   --white: #FFFFFF;
   --success: #2E7D46;
   --success-bg: #E3F0E7;
+  --orange-bg: #FDECD3;
   --danger: #B3261E;
   --danger-bg: #FBEAE9;
   --text: #16233D;
@@ -268,7 +269,7 @@ a:focus-visible {
 
 .grade-choice {
   display: inline-flex;
-  gap: 16px;
+  gap: 10px;
   align-items: center;
   font-weight: 700;
   color: var(--text);
@@ -278,7 +279,7 @@ a:focus-visible {
 .grade-choice label {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   cursor: pointer;
 }
 
@@ -286,6 +287,10 @@ a:focus-visible {
   width: 18px;
   height: 18px;
   accent-color: var(--navy);
+}
+
+#addNameInput {
+  flex: 0 1 260px;
 }
 
 .child-grid {
@@ -314,10 +319,16 @@ a:focus-visible {
 .child-btn:hover { border-color: var(--navy); }
 .child-btn:active { transform: scale(0.97); }
 
-.child-btn.called {
+.child-btn.called.called-green {
   background: var(--success-bg);
   border-color: var(--success);
   color: var(--success);
+}
+
+.child-btn.called.called-orange {
+  background: var(--orange-bg);
+  border-color: var(--amber-dark);
+  color: var(--amber-dark);
 }
 
 .child-btn.called::after {
@@ -530,6 +541,24 @@ a:focus-visible {
   padding: 10px;
   border-bottom: 1px solid #EEF0F3;
   font-size: 15px;
+}
+
+.class-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.class-badge-green {
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.class-badge-orange {
+  background: var(--orange-bg);
+  color: var(--amber-dark);
 }
 
 .student-table input.edit-input {
