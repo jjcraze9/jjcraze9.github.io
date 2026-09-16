@@ -79,7 +79,7 @@ function renderRecent() {
   recentThree.forEach((entry) => {
     const li = document.createElement('li');
     const btn = document.createElement('button');
-    btn.className = 'recent-chip';
+    btn.className = 'recent-chip ' + (studentClassColor(entry.id) === 'orange' ? 'recent-chip-orange' : 'recent-chip-green');
     btn.textContent = '✓ ' + entry.name;
     btn.title = 'Tap to undo this call';
     btn.addEventListener('click', () => uncallStudent(entry.id));

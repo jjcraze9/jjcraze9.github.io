@@ -382,8 +382,6 @@ a:focus-visible {
 }
 
 .recent-chip {
-  background: var(--success-bg);
-  color: var(--success);
   padding: 7px 14px;
   border-radius: 999px;
   font-weight: 700;
@@ -393,8 +391,22 @@ a:focus-visible {
   transition: background 0.15s ease;
 }
 
-.recent-chip:hover {
+.recent-chip-green {
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.recent-chip-green:hover {
   background: #D3ECD9;
+}
+
+.recent-chip-orange {
+  background: var(--orange-bg);
+  color: var(--amber-dark);
+}
+
+.recent-chip-orange:hover {
+  background: #FBE0B4;
 }
 
 .recent-chip:active {
