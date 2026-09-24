@@ -71,12 +71,12 @@ function render() {
 function renderRecent() {
   const entries = Object.keys(callLog).map((id) => ({ id, ...callLog[id] }));
   entries.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0)); // oldest first
-  const recentThree = entries.slice(-3); // last 3 chronologically, still oldest-of-these-three first
+  const recentEntries = entries.slice(-8); // last 8 chronologically, oldest-of-these-eight first
 
   recentList.innerHTML = '';
-  recentEmpty.style.display = recentThree.length === 0 ? 'block' : 'none';
+  recentEmpty.style.display = recentEntries.length === 0 ? 'block' : 'none';
 
-  recentThree.forEach((entry) => {
+  recentEntries.forEach((entry) => {
     const li = document.createElement('li');
     const btn = document.createElement('button');
     btn.className = 'recent-chip ' + (studentClassColor(entry.id) === 'orange' ? 'recent-chip-orange' : 'recent-chip-green');
