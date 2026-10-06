@@ -71,7 +71,7 @@ function render() {
 function renderRecent() {
   const entries = Object.keys(callLog).map((id) => ({ id, ...callLog[id] }));
   entries.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0)); // oldest first
-  const recentEntries = entries.slice(-8); // last 8 chronologically, oldest-of-these-eight first
+  const recentEntries = entries.slice(-25); // last 25 chronologically, oldest-of-these first
 
   recentList.innerHTML = '';
   recentEmpty.style.display = recentEntries.length === 0 ? 'block' : 'none';
